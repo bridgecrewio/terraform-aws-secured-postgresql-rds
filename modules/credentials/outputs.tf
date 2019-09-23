@@ -16,5 +16,5 @@ output "password_ssm_name" {
 
 }
 output "kms_key_id" {
-  value = "${aws_kms_key.postgres_kms.key_id}"
+  value = "${aws_kms_key.postgres_kms.arn}"
 }

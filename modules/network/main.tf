@@ -8,18 +8,27 @@ resource "aws_vpc" "postgres_vpc" {
   }
 }
 
-resource "aws_subnet" "postgres_subnet" {
+resource "aws_subnet" "postgres_secondary_subnet" {
   vpc_id     = "${aws_vpc.postgres_vpc.id}"
-  cidr_block = "${var.subnet_cidr_block}"
+  cidr_block = "${var.secondary_subnet_cidr_block}"
   tags = {
-    Name = "${var.resource_prefix} subnet"
+    Name = "${var.resource_prefix} secondary subnet"
+    environment = "${var.environment}"
+  }
+}
+
+resource "aws_subnet" "postgres_primary_subnet" {
+  vpc_id     = "${aws_vpc.postgres_vpc.id}"
+  cidr_block = "${var.primary_subnet_cidr_block}"
+  tags = {
+    Name = "${var.resource_prefix} primary subnet"
     environment = "${var.environment}"
   }
 }
 
 resource "aws_db_subnet_group" "postgres_subnet_group" {
   name       = "${var.resource_prefix}subnet_group"
-  subnet_ids = ["${aws_subnet.postgres_subnet.id}"]
+  subnet_ids = ["${aws_subnet.postgres_primary_subnet.id}", "${aws_subnet.postgres_secondary_subnet.id}"]
 
   tags = {
     Name = "${var.resource_prefix} subnet group"
@@ -38,16 +47,38 @@ resource "aws_security_group" "postgres_security_group" {
     to_port     = "${var.database_port}"
     protocol    = "tcp"
   }
+  ingress {
+    cidr_blocks = ["${var.postgress_internet_cidr}"]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+  }
   tags = {
     environment = "${var.environment}"
   }
+}
+
+# Create the Internet Gateway
+resource "aws_internet_gateway" "postgress_gw" {
+  vpc_id = "${aws_vpc.postgres_vpc.id}"
+  tags = {
+    Name = "${var.resource_prefix}"
+  }
+}
+
+# Create the Internet Access
+
+resource "aws_route" "postgress_internet_access" {
+  route_table_id        = "${aws_route_table.postgres_vpc_route_table.id}"
+  destination_cidr_block = "${var.postgress_internet_cidr}"
+  gateway_id             = "${aws_internet_gateway.postgress_gw.id}"
 }
 
 # create VPC Network access control list
 resource "aws_network_acl" "postgres_security_acl" {
   vpc_id = "${aws_vpc.postgres_vpc.id}"
   subnet_ids = [
-  "${aws_subnet.postgres_subnet.id}"]
+  "${aws_subnet.postgres_primary_subnet.id}", "${aws_subnet.postgres_secondary_subnet.id}"]
   # allow port "${var.postgres_port}"
   ingress {
     protocol   = "tcp"
@@ -75,6 +106,14 @@ resource "aws_network_acl" "postgres_security_acl" {
     from_port  = "${var.database_port}"
     to_port    = "${var.database_port}"
   }
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 300
+    action     = "allow"
+    cidr_block = "${var.postgress_internet_cidr}"
+    from_port  = 22
+    to_port    = 22
+  }
   tags = {
     Name = "${var.resource_prefix} vpc ACL"
     environment = "${var.environment}"
@@ -92,6 +131,6 @@ resource "aws_route_table" "postgres_vpc_route_table" {
 
 # Associate the Route Table with the Subnet
 resource "aws_route_table_association" "postgres_vpc_association" {
-  subnet_id      = "${aws_subnet.postgres_subnet.id}"
+  subnet_id      = "${aws_subnet.postgres_primary_subnet.id}"
   route_table_id = "${aws_route_table.postgres_vpc_route_table.id}"
 }

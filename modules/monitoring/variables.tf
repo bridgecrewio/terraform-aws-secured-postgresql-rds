@@ -1,5 +1,6 @@
 variable "database_name" {}
 variable "environment" {}
+variable "resource_prefix" {}
 
 
 variable "alarm_cpu_threshold" {

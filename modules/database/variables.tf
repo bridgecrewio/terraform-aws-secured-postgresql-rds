@@ -1,4 +1,5 @@
 variable "environment" {}
+
 variable region {
   default = "us-west-2"
 }
@@ -11,7 +12,7 @@ variable "engine_version" {
 }
 
 variable "instance_type" {
-  default = "db.t2.micro"
+  default = "db.t2.small"
 }
 
 variable "storage_type" {
@@ -46,16 +47,9 @@ variable "auto_minor_version_upgrade" {
   default = true
 }
 
-variable "final_snapshot_identifier" {
-  default = "terraform-aws-postgresql-rds-snapshot"
-}
-
-variable "skip_final_snapshot" {
-  default = true
-}
 
 variable "copy_tags_to_snapshot" {
-  default = false
+  default = true
 }
 
 variable "multi_availability_zone" {
@@ -72,4 +66,8 @@ variable "parameter_group" {
 
 variable "monitoring_interval" {
   default = "0"
+}
+
+variable "snapshot_identifier" {
+  default = ""
 }

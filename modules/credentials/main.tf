@@ -1,10 +1,10 @@
 #
 # RDS Password
 #
-resource "random_password" "postgress_password" {
+resource "random_string" "postgress_password" {
   length           = 32
   special          = true
-  override_special = "/@\" "
+  override_special = "@"
 }
 
 #
@@ -26,7 +26,7 @@ locals {
 resource "aws_ssm_parameter" "postgresql_password_ssm" {
   name        = "${local.base_ssm_path}/password"
   type        = "SecureString"
-  value       = "${random_password.postgress_password.result}"
+  value       = "${random_string.postgress_password.result}"
   description = "Database password of ${var.resource_prefix} postgres"
   key_id      = "${aws_kms_key.postgres_kms.key_id}"
   tags = {
