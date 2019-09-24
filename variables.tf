@@ -2,15 +2,14 @@ variable "environment" {
   description = "The environment this deployment is for, i.e. dev / prod / staging etc"
   default     = "dev"
 }
-variable region {
-  default = "us-west-2"
-}
+
 variable "allocated_storage" {
-  default = "100"
+  description = "The allocated storage size of the DB, in GiB"
+  default     = "100"
 }
 
 variable "engine_version" {
-  default = "9.6.9"
+  default = "9.6"
 }
 
 variable "instance_type" {
@@ -28,10 +27,6 @@ variable "iops" {
 variable "vpc_peering_id" {
   type    = string
   default = null
-}
-
-variable "snapshot_identifier" {
-  default = ""
 }
 
 variable "database_name" {
@@ -65,20 +60,12 @@ variable "auto_minor_version_upgrade" {
   default = true
 }
 
-variable "final_snapshot_identifier" {
-  default = "terraform-aws-postgresql-rds-snapshot"
-}
-
-variable "skip_final_snapshot" {
-  default = true
-}
-
 variable "copy_tags_to_snapshot" {
-  default = false
+  default = true
 }
 
 variable "multi_availability_zone" {
-  default = true
+  default = false
 }
 
 variable "deletion_protection" {
@@ -89,12 +76,15 @@ variable "parameter_group" {
   default = "default.postgres9.6"
 }
 
-variable "profile" {
-  description = "The AWS profile to be used."
-  default     = "default"
+variable "monitoring_interval" {
+  default = "0"
+}
+
+variable "snapshot_identifier" {
+  default = null
 }
 
 variable "allow_major_version_upgrade" {
-  description = "Allows for upgrade of DB software by a major version."
+  type = bool
   default = false
 }

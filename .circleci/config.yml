@@ -1,0 +1,58 @@
+version: 2
+jobs:
+  test_compile:
+    working_directory: ~/rds_module
+    docker:
+      - image: hashicorp/terraform
+      steps:
+        - checkout:
+            path: ~/rds_module
+        - run:
+            name: Check formatting
+            command: |
+              terraform fmt -recursive -check
+              exit $( echo $? )
+        - run:
+            name: Create main.tf file that uses the module
+            command: |
+              cat << EOF > main.tf
+              provider "aws" {
+                region  = "us-east-1"
+                profile = "test"
+              }
+
+              module "database" {
+                source                     = "./modules/database"
+                database_name              = "test-db"
+                environment                = "dev"
+              }
+
+              EOF
+        - run:
+            name: Configure AWS credentials
+            command: |
+              aws configure --profile test set aws_access_key_id $TEST_AWS_ACCESS_KEY_ID
+              aws configure --profile test set aws_secret_access_key $TEST_AWS_SECRET_ACCESS_KEY
+              aws configure --profile test set region $REGION
+        - run:
+            name: Plan to see if terraform makes sense
+            command: |
+              terraform init
+              terraform plan -var-file=params.tfvars
+
+
+  test_run:
+    working_directory: ~/rds_module
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout:
+          path: ~/rds_module
+      - run:
+          name: create temp main & var files
+
+workflows:
+  version: 2
+  tests:
+    jobs:
+      - test_compile
