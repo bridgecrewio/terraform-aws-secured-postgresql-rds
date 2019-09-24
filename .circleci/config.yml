@@ -6,8 +6,6 @@ jobs:
     docker:
       - image: bridgecrew/circleci-base:1.9
     environment:
-      TEST_AWS_ACCESS_KEY_ID: AKIARKITRTMINDLDRAFO
-      TEST_AWS_SECRET_ACCESS_KEY: 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
       REGION: us-west-2
     steps:
       - checkout:
