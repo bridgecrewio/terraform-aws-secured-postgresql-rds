@@ -1,5 +1,11 @@
-variable environment {}
-variable resource_prefix {}
+variable environment {
+  type = string
+}
+
+variable resource_prefix {
+  type = string
+}
+
 variable database_port {
   default = 5432
 }

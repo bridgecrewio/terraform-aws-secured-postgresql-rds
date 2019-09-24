@@ -85,6 +85,6 @@ variable "snapshot_identifier" {
 }
 
 variable "allow_major_version_upgrade" {
-  type = bool
+  type    = bool
   default = false
 }

@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.12.0"
+}
+
 locals {
   resources_prefix = "${var.environment}-${var.database_name}"
 }
@@ -14,7 +18,6 @@ module "postgres_network" {
   environment     = var.environment
   resource_prefix = local.resources_prefix
 }
-
 
 #
 # IAM resources
@@ -78,13 +81,13 @@ resource "aws_db_instance" "postgresql" {
   vpc_security_group_ids = [
     module.postgres_network.security_group_id
   ]
-  db_subnet_group_name = module.postgres_network.subnet_group
-  parameter_group_name = var.parameter_group
-  storage_encrypted    = true
-  kms_key_id           = module.postgres_credetials.kms_key_id
-  monitoring_interval  = var.monitoring_interval
-  monitoring_role_arn  = var.monitoring_interval > 0 ? aws_iam_role.enhanced_monitoring_role.arn : ""
-  deletion_protection  = var.deletion_protection
+  db_subnet_group_name        = module.postgres_network.subnet_group
+  parameter_group_name        = var.parameter_group
+  storage_encrypted           = true
+  kms_key_id                  = module.postgres_credetials.kms_key_id
+  monitoring_interval         = var.monitoring_interval
+  monitoring_role_arn         = var.monitoring_interval > 0 ? aws_iam_role.enhanced_monitoring_role.arn : ""
+  deletion_protection         = var.deletion_protection
   allow_major_version_upgrade = var.allow_major_version_upgrade
 
   tags = {
@@ -102,9 +105,3 @@ module "postgres_monitoring" {
   postgresql_id       = aws_db_instance.postgresql.id
   resource_prefix     = local.resources_prefix
 }
-
-terraform {
-  required_version = ">= 0.12.0"
-}
-
-
