@@ -10,17 +10,18 @@ resource "aws_cloudwatch_metric_alarm" "database_cpu" {
   namespace           = "AWS/RDS"
   period              = "300"
   statistic           = "Average"
-  threshold           = "${var.alarm_cpu_threshold}"
+  threshold           = var.alarm_cpu_threshold
 
-  dimensions ={
-    DBInstanceIdentifier = "${var.postgresql_id}"
+  dimensions = {
+    DBInstanceIdentifier = var.postgresql_id
   }
 
-  alarm_actions             = "${var.alarm_actions}"
-  ok_actions                = "${var.ok_actions}"
-  insufficient_data_actions = "${var.insufficient_data_actions}"
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
+  insufficient_data_actions = var.insufficient_data_actions
   tags = {
-    environment = "${var.environment}"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
   }
 }
 
@@ -33,17 +34,18 @@ resource "aws_cloudwatch_metric_alarm" "database_disk_queue" {
   namespace           = "AWS/RDS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "${var.alarm_disk_queue_threshold}"
+  threshold           = var.alarm_disk_queue_threshold
 
-  dimensions ={
-    DBInstanceIdentifier = "${var.postgresql_id}"
+  dimensions = {
+    DBInstanceIdentifier = var.postgresql_id
   }
 
-  alarm_actions             = "${var.alarm_actions}"
-  ok_actions                = "${var.ok_actions}"
-  insufficient_data_actions = "${var.insufficient_data_actions}"
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
+  insufficient_data_actions = var.insufficient_data_actions
   tags = {
-    environment = "${var.environment}"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
   }
 }
 
@@ -56,17 +58,18 @@ resource "aws_cloudwatch_metric_alarm" "database_disk_free" {
   namespace           = "AWS/RDS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "${var.alarm_free_disk_threshold}"
+  threshold           = var.alarm_free_disk_threshold
 
-  dimensions= {
-    DBInstanceIdentifier = "${var.postgresql_id}"
+  dimensions = {
+    DBInstanceIdentifier = var.postgresql_id
   }
 
-  alarm_actions             = "${var.alarm_actions}"
-  ok_actions                = "${var.ok_actions}"
-  insufficient_data_actions = "${var.insufficient_data_actions}"
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
+  insufficient_data_actions = var.insufficient_data_actions
   tags = {
-    environment = "${var.environment}"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
   }
 }
 
@@ -79,23 +82,24 @@ resource "aws_cloudwatch_metric_alarm" "database_memory_free" {
   namespace           = "AWS/RDS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "${var.alarm_free_memory_threshold}"
+  threshold           = var.alarm_free_memory_threshold
 
-  dimensions= {
-    DBInstanceIdentifier = "${var.postgresql_id}"
+  dimensions = {
+    DBInstanceIdentifier = var.postgresql_id
   }
 
-  alarm_actions             = "${var.alarm_actions}"
-  ok_actions                = "${var.ok_actions}"
-  insufficient_data_actions = "${var.insufficient_data_actions}"
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
+  insufficient_data_actions = var.insufficient_data_actions
   tags = {
-    environment = "${var.environment}"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "database_cpu_credits" {
   // This results in 1 if instance_type starts with "db.t", 0 otherwise.
-  count               = "${substr(var.instance_type, 0, 3) == "db.t" ? 1 : 0}"
+  count               = substr(var.instance_type, 0, 3) == "db.t" ? 1 : 0
   alarm_name          = "alarm${var.environment}DatabaseCPUCreditBalance-${var.database_identifier}"
   alarm_description   = "Database CPU credit balance"
   comparison_operator = "LessThanThreshold"
@@ -104,16 +108,17 @@ resource "aws_cloudwatch_metric_alarm" "database_cpu_credits" {
   namespace           = "AWS/RDS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "${var.alarm_cpu_credit_balance_threshold}"
+  threshold           = var.alarm_cpu_credit_balance_threshold
 
-  dimensions =  {
-    DBInstanceIdentifier = "${var.postgresql_id}"
+  dimensions = {
+    DBInstanceIdentifier = var.postgresql_id
   }
 
-  alarm_actions             = "${var.alarm_actions}"
-  ok_actions                = "${var.ok_actions}"
-  insufficient_data_actions = "${var.insufficient_data_actions}"
+  alarm_actions             = var.alarm_actions
+  ok_actions                = var.ok_actions
+  insufficient_data_actions = var.insufficient_data_actions
   tags = {
-    environment = "${var.environment}"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
   }
 }

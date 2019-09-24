@@ -1,6 +1,15 @@
-variable "environment" {}
-variable resource_prefix {}
-variable "database_name" {}
+variable "environment" {
+  type = "string"
+}
+
+variable "database_name" {
+  type = "string"
+}
+
+variable "resource_prefix" {
+  type = "string"
+}
+
 variable "database_username" {
   default = "awsuser"
 }

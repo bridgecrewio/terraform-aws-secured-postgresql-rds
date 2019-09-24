@@ -1,14 +1,16 @@
 variable "environment" {}
 
 variable region {
-  default = "us-west-2"
+  description = "The AWS region this module will be deployed to"
+  default     = "us-west-2"
 }
 variable "allocated_storage" {
-  default = "100"
+  description = "The allocated storage size of the DB, in GiB"
+  default     = "100"
 }
 
 variable "engine_version" {
-  default = "9.6.9"
+  default = "9.6"
 }
 
 variable "instance_type" {
@@ -22,8 +24,9 @@ variable "storage_type" {
 variable "iops" {
   default = "0"
 }
-variable "database_name" {}
-
+variable "database_name" {
+  type = "string"
+}
 
 variable "database_port" {
   default = "5432"
@@ -47,7 +50,6 @@ variable "auto_minor_version_upgrade" {
   default = true
 }
 
-
 variable "copy_tags_to_snapshot" {
   default = true
 }
@@ -69,5 +71,10 @@ variable "monitoring_interval" {
 }
 
 variable "snapshot_identifier" {
-  default = ""
+  default = null
+}
+
+variable "allow_major_version_upgrade" {
+  type = bool
+  default = false
 }

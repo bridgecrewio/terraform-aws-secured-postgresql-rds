@@ -26,17 +26,17 @@ variable "alarm_cpu_credit_balance_threshold" {
 }
 
 variable "alarm_actions" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
 variable "ok_actions" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
 variable "insufficient_data_actions" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
