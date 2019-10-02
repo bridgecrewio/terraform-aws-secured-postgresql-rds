@@ -5,7 +5,8 @@
 A Terraform module to create an Amazon Web Services (AWS) PostgreSQL Relational Database Server (RDS) in a VPC, NAT and security best practices.
 
 ## Architecture:
-TODO
+![alt text](docs/secured-rds-architecture.png "RDS Best Practices")
+
 
 The username and password to the DB will be stored in AWS System Manager's Parameter store, to be reused by all the 
 instances which require access to the DB, and allow for easy password change.
@@ -34,4 +35,18 @@ This module is designed to be highly configurable. The possible inputs and their
 | deletion_protection | NO | Boolean | false | true | The DB can't be deleted while this is set to true |
 | monitoring_interval | NO | Integer enum | 0 | 5 | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. Valid Values: 0, 1, 5, 10, 15, 30, 60. |
 | snapshot_identifier | NO | String | null | rds:production-2015-06-26-06-05 | If set, the DB will be created from the specified snapshot identifier |
+
+## Outuput
+| Name |  Example Value | Description |
+|------|----------------|-------------|
+| db_instance_id | dev-secured-rds | DB Identifier | 
+| db_vpc_id | vpc-07e819de8f3af8215 | VPC identifier  |
+| private_subnet_id | subnet-0a4ec7223e81e0b09
+ | Private subnet identifier |
+| db_username_ssm_parameter | /dev/database/postgresql/secured-rds/username | Path to SecuredString containing PostgresSQL username |
+| db_password_ssm_parameter | /dev/database/postgresql/secured-rds/password | Path to SecuredString containing PostgresSQL generated password |
+
+## Examples (TODO):
+* [How to connect from your office CIDR](docs/howTo/connecting-from-cidr.md)
+* [How to connect from another VPC](docs/howTo/connecting-from-external-vpc.md)
 
