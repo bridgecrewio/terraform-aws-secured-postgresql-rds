@@ -17,17 +17,17 @@ This module is designed to be highly configurable. The possible inputs and their
 |---|---|---|---|---|---|
 | database_name| YES | String | | user_actions | The name of the DB instance to be created |
 | environment | NO | String | dev | prod | The environment this DB will be part of |
-| allocated_storage | NO | Integer | 100 | The allocated storage size of the DB, in GiB |
+| allocated_storage | NO | Integer | 100 | 250 | The allocated storage size of the DB, in GiB |
 | engine_version | NO | String | 9.6 | 10.5 | The version the DB will run on |
 | instance_type | NO | String | db.m4.large | db.t2.small | The instance the DB will run on |
 | storage_type | NO | String | gp2 | standard | The storage type of the DB instance |
 | iops | NO | Integer | 0 | 10000 | The amount of provisioned iops |
-| vpc_peering_id | NO | null | vpc-123456789 | The ID of a VPC to peer to this VPC |
+| vpc_peering_id | NO | String | null | vpc-123456789 | The ID of a VPC to peer to this VPC |
 | database_username | NO | String | awsuser | proddbuser | The username for access to the instance |
 | database_port | NO | Integer | 5432 | 8080 | The port to be opened for DB communications |
 | backup_retention_period | NO | Integer | 30 | 14 | The number of days backuups will be stored for |
 | backup_window | NO | Formatted String | 08:00-08:30 | 12:30-13:00 | The time window, in 24h UTC format, when the backups will take place. |
-| maintenance_window | NO | Formatted String | sun:09:00-sun:10:00 | The maintenance window time, in 24h UTC format. Needs to conform to the format ddd:hh24:mi-ddd:hh24:mi |
+| maintenance_window | NO | Formatted String | sun:09:00-sun:10:00 | sat:12:00-sat:13:00 | The maintenance window time, in 24h UTC format. Needs to conform to the format ddd:hh24:mi-ddd:hh24:mi |
 | auto_minor_version_upgrade | NO | Boolean | true | false | Determines whether to upgrade the engine version if minor updates are released in the upcoming maintenance window or not |
 | allow_major_version_upgrade | NO | Boolean | false | true | Determines whether to upgrade the engine version if major updates are released in the upcoming maintenance window or not |
 | multi_availability_zone | NO | Boolean | true | false | Specifies if the RDS instance is multi-AZ |

@@ -3,14 +3,14 @@ terraform {
 }
 
 locals {
-  resources_prefix = "${var.environment}-${var.database_name}"
+  resources_prefix = "${var.environment}-${var.instance_name}"
 }
 
 module "postgres_credetials" {
   source          = "./modules/credentials"
   environment     = var.environment
   resource_prefix = local.resources_prefix
-  database_name   = var.database_name
+  database_name   = var.instance_name
 }
 
 module "postgres_network" {
@@ -68,7 +68,6 @@ resource "aws_db_instance" "postgresql" {
   instance_class             = var.instance_type
   storage_type               = var.storage_type
   iops                       = var.iops
-  name                       = var.database_name
   password                   = module.postgres_credetials.password
   username                   = module.postgres_credetials.username
   backup_retention_period    = var.backup_retention_period

@@ -29,9 +29,9 @@ variable "vpc_peering_id" {
   default = null
 }
 
-variable "database_name" {
+variable "instance_name" {
   type        = string
-  description = "The name of the database to be created"
+  description = "The name of the database instance to be created"
 }
 
 variable "database_username" {
