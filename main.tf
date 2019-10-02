@@ -17,6 +17,7 @@ module "postgres_network" {
   source          = "./modules/network"
   environment     = var.environment
   resource_prefix = local.resources_prefix
+  office_cidr_range = var.office_cidr
 }
 
 #
@@ -74,10 +75,11 @@ resource "aws_db_instance" "postgresql" {
   backup_window              = var.backup_window
   maintenance_window         = var.maintenance_window
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
-  final_snapshot_identifier  = "${local.resources_prefix}FinalSnapshot-${timestamp()}"
+  final_snapshot_identifier  = "${local.resources_prefix}-FinalSnapshot"
   copy_tags_to_snapshot      = var.copy_tags_to_snapshot
   multi_az                   = var.multi_availability_zone
   port                       = var.database_port
+  publicly_accessible        = var.office_cidr != "" ? true : false
   vpc_security_group_ids = [
     module.postgres_network.security_group_id
   ]
@@ -94,13 +96,15 @@ resource "aws_db_instance" "postgresql" {
     Environment    = var.environment,
     TerraformStack = local.resources_prefix
   }
+
+  depends_on = [module.postgres_network]
 }
 
 module "postgres_monitoring" {
   source              = "./modules/monitoring"
   environment         = var.environment
   database_name       = aws_db_instance.postgresql.name
-  instance_type       = aws_db_instance.postgresql.instance_class
+  instance_type       = var.instance_type
   database_identifier = aws_db_instance.postgresql.identifier
   postgresql_id       = aws_db_instance.postgresql.id
   resource_prefix     = local.resources_prefix

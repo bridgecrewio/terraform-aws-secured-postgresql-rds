@@ -65,7 +65,7 @@ variable "copy_tags_to_snapshot" {
 }
 
 variable "multi_availability_zone" {
-  default = false
+  default = true
 }
 
 variable "deletion_protection" {
@@ -87,4 +87,10 @@ variable "snapshot_identifier" {
 variable "allow_major_version_upgrade" {
   type    = bool
   default = false
+}
+
+variable "office_cidr" {
+  type = string
+  description = "The public CIDR range the RDS will be open to. Should be used to be able to directly connect to the RDS from the company offices"
+  default = ""
 }

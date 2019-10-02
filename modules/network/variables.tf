@@ -30,3 +30,8 @@ variable secondary_subnet_cidr_block {
 variable "postgress_internet_cidr" {
   default = "0.0.0.0/0"
 }
+
+variable "office_cidr_range" {
+  type = string
+  default = ""
+}
