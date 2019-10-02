@@ -21,3 +21,7 @@ output "db_username_ssm_parameter" {
 output "db_password_ssm_parameter" {
   value = module.postgres_credetials.password_ssm_name
 }
+
+output "kms_alias_arn" {
+  value = module.postgres_credetials.kms_alias_arn
+}

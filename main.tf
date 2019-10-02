@@ -14,9 +14,9 @@ module "postgres_credetials" {
 }
 
 module "postgres_network" {
-  source          = "./modules/network"
-  environment     = var.environment
-  resource_prefix = local.resources_prefix
+  source            = "./modules/network"
+  environment       = var.environment
+  resource_prefix   = local.resources_prefix
   office_cidr_range = var.office_cidr
 }
 
@@ -60,14 +60,16 @@ data "aws_db_snapshot" "postgresql_snapshot" {
 }
 
 resource "aws_db_instance" "postgresql" {
-  allocated_storage          = var.allocated_storage
-  engine                     = "postgres"
-  engine_version             = var.engine_version
-  identifier                 = local.resources_prefix
-  snapshot_identifier        = var.snapshot_identifier
-  instance_class             = var.instance_type
-  storage_type               = var.storage_type
-  iops                       = var.iops
+  allocated_storage   = var.allocated_storage
+  engine              = "postgres"
+  engine_version      = var.engine_version
+  identifier          = local.resources_prefix
+  snapshot_identifier = var.snapshot_identifier
+  instance_class      = var.instance_type
+  storage_type        = var.storage_type
+  iops                = var.iops
+  // TODO: make more general
+  name                       = "testdb"
   password                   = module.postgres_credetials.password
   username                   = module.postgres_credetials.username
   backup_retention_period    = var.backup_retention_period
@@ -85,7 +87,7 @@ resource "aws_db_instance" "postgresql" {
   db_subnet_group_name        = module.postgres_network.subnet_group
   parameter_group_name        = var.parameter_group
   storage_encrypted           = true
-  kms_key_id                  = module.postgres_credetials.kms_key_id
+  kms_key_id                  = module.postgres_credetials.kms_alias_arn
   monitoring_interval         = var.monitoring_interval
   monitoring_role_arn         = var.monitoring_interval > 0 ? aws_iam_role.enhanced_monitoring_role.arn : ""
   deletion_protection         = var.deletion_protection

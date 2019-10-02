@@ -2,10 +2,12 @@ data "aws_availability_zones" "available_availability_zones" {
   state = "available"
 }
 
+data "aws_region" "current_region" {}
+
 resource "aws_vpc" "postgres_vpc" {
-  cidr_block = var.vpc_cidr_block
-  enable_dns_support = var.office_cidr_range != ""
-  enable_dns_hostnames = var.office_cidr_range != ""
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     Name           = "${var.resource_prefix} vpc"
@@ -26,9 +28,9 @@ resource "aws_subnet" "private_subnet" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  vpc_id            = aws_vpc.postgres_vpc.id
-  cidr_block        = var.primary_subnet_cidr_block
-  availability_zone = data.aws_availability_zones.available_availability_zones.names[0]
+  vpc_id                  = aws_vpc.postgres_vpc.id
+  cidr_block              = var.primary_subnet_cidr_block
+  availability_zone       = data.aws_availability_zones.available_availability_zones.names[0]
   map_public_ip_on_launch = true
   tags = {
     Name           = "${var.resource_prefix} public subnet"
@@ -53,20 +55,28 @@ resource "aws_security_group" "postgres_security_group" {
   name        = "${var.resource_prefix} security group"
   description = "postgres security group"
   ingress {
-    cidr_blocks = [
-      var.vpc_cidr_block
-    ]
-    from_port = var.database_port
-    to_port   = var.database_port
-    protocol  = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+    from_port   = var.database_port
+    to_port     = var.database_port
+    protocol    = "tcp"
   }
   ingress {
-    cidr_blocks = [
-      var.postgress_internet_cidr
-    ]
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    cidr_blocks = [var.office_cidr_range]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
     Name           = "${var.resource_prefix}-security-group"
@@ -87,7 +97,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 # Create the Internet Access
 resource "aws_route" "routing_table_internet_access" {
   route_table_id         = aws_route_table.postgres_vpc_route_table.id
-  destination_cidr_block = var.postgress_internet_cidr
+  destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.internet_gateway.id
 }
 
@@ -108,14 +118,33 @@ resource "aws_network_acl" "vpc_security_acl" {
     to_port    = var.database_port
   }
 
-  # allow ingress ephemeral ports
   ingress {
     protocol   = "tcp"
     rule_no    = 200
     action     = "allow"
-    cidr_block = var.vpc_cidr_block
-    from_port  = var.database_port
-    to_port    = var.database_port
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # allow ingress ephemeral ports
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 300
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  # allow ingress ssh from office
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 400
+    action     = "allow"
+    cidr_block = var.office_cidr_range
+    from_port  = 22
+    to_port    = 22
   }
 
   # allow egress ephemeral ports
@@ -127,14 +156,16 @@ resource "aws_network_acl" "vpc_security_acl" {
     from_port  = var.database_port
     to_port    = var.database_port
   }
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 300
+
+  egress {
     action     = "allow"
-    cidr_block = var.postgress_internet_cidr
-    from_port  = 22
-    to_port    = 22
+    from_port  = 0
+    protocol   = "all"
+    rule_no    = 200
+    to_port    = 0
+    cidr_block = "0.0.0.0/0"
   }
+
   tags = {
     Name           = "${var.resource_prefix} vpc ACL"
     Environment    = var.environment
@@ -153,7 +184,29 @@ resource "aws_route_table" "postgres_vpc_route_table" {
 }
 
 # Associate the Route Table with the Subnet
-resource "aws_route_table_association" "postgres_vpc_association" {
+resource "aws_route_table_association" "postgres_vpc_public_subnet_association" {
   subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.postgres_vpc_route_table.id
+}
+
+# Associate the Route Table with the Subnet
+resource "aws_route_table_association" "postgres_vpc_private_subnet_association" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.postgres_vpc_route_table.id
+}
+
+resource "aws_vpc_endpoint" "ssm_endpoint" {
+  service_name        = "com.amazonaws.${data.aws_region.current_region.name}.ssm"
+  vpc_id              = aws_vpc.postgres_vpc.id
+  vpc_endpoint_type   = "Interface"
+  auto_accept         = true
+  subnet_ids          = [aws_subnet.private_subnet.id]
+  security_group_ids  = [aws_security_group.postgres_security_group.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name           = "${var.resource_prefix} SSM Endpoint"
+    Environment    = var.environment
+    TerraformStack = var.resource_prefix
+  }
 }
