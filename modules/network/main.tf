@@ -6,7 +6,7 @@ data "aws_region" "current_region" {}
 
 locals {
   allow_connection_to_office = var.office_cidr_range != "0.0.0.0/32"
-  ip_range_as_list           = regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/(\\d{1,2})$", var.vpc_cidr_block)
+  ip_range_as_list           = split(".", var.vpc_cidr_block)
 }
 
 resource "aws_vpc" "postgres_vpc" {
@@ -24,7 +24,7 @@ resource "aws_vpc" "postgres_vpc" {
 resource "aws_subnet" "db_subnets" {
   count             = 3
   vpc_id            = aws_vpc.postgres_vpc.id
-  cidr_block        = format("%s.%s.%s.%s/24", local.ip_range_as_list[0], local.ip_range_as_list[1], count.index, "0")
+  cidr_block        = format("%s.%s.%s.0/24", local.ip_range_as_list[0], local.ip_range_as_list[1], count.index)
   availability_zone = data.aws_availability_zones.available_availability_zones.names[count.index]
   tags = {
     Name           = "${var.resource_prefix} subnet #${count.index + 1}"
