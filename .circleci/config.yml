@@ -15,15 +15,15 @@ jobs:
           command: |
             cat << EOF > main.tf
             provider "aws" {
-              region = "eu-central-1"
+              region  = "eu-central-1"
               profile = "test"
             }
 
             module "secure_rds" {
-              source = "../terraform-aws-secured-postgresql-rds"
+              source        = "../terraform-aws-secured-postgresql-rds"
               instance_name = "secured-rds"
-              environment = "dev"
-              office_cidr = "31.168.227.138/32"
+              environment   = "dev"
+              office_cidr   = "31.168.227.138/32"
             }
             EOF
       - run:
