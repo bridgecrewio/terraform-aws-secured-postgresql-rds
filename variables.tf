@@ -92,5 +92,5 @@ variable "allow_major_version_upgrade" {
 variable "office_cidr" {
   type        = string
   description = "The public CIDR range the RDS will be open to. Should be used to be able to directly connect to the RDS from the company offices"
-  default     = "0.0.0.0/0"
+  default     = "0.0.0.0/32" // This value is an invalid address
 }

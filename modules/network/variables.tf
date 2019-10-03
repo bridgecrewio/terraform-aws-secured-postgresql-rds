@@ -28,6 +28,6 @@ variable secondary_subnet_cidr_block {
 }
 
 variable "office_cidr_range" {
-  type    = string
-  default = "0.0.0.0/32"
+  description = "The CIDR range the database port and SSH port will be open for in these vpcs."
+  type        = string
 }

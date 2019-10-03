@@ -4,6 +4,10 @@ data "aws_availability_zones" "available_availability_zones" {
 
 data "aws_region" "current_region" {}
 
+locals {
+  allow_connection_to_office = var.office_cidr_range != "0.0.0.0/32"
+}
+
 resource "aws_vpc" "postgres_vpc" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_support   = true
@@ -61,12 +65,6 @@ resource "aws_security_group" "postgres_security_group" {
     protocol    = "tcp"
   }
   ingress {
-    cidr_blocks = [var.office_cidr_range]
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-  }
-  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -83,6 +81,26 @@ resource "aws_security_group" "postgres_security_group" {
     Environment    = var.environment
     TerraformStack = var.resource_prefix
   }
+}
+
+resource "aws_security_group_rule" "offic_security_group_rule_postgres" {
+  count             = local.allow_connection_to_office ? 1 : 0
+  from_port         = var.database_port
+  protocol          = "tcp"
+  security_group_id = aws_security_group.postgres_security_group.id
+  to_port           = var.database_port
+  type              = "ingress"
+  cidr_blocks       = [var.office_cidr_range]
+}
+
+resource "aws_security_group_rule" "office_security_group_rule_ssh" {
+  count             = local.allow_connection_to_office ? 1 : 0
+  from_port         = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.postgres_security_group.id
+  to_port           = 22
+  type              = "ingress"
+  cidr_blocks       = [var.office_cidr_range]
 }
 
 # Create the Internet Gateway
@@ -137,16 +155,6 @@ resource "aws_network_acl" "vpc_security_acl" {
     to_port    = 65535
   }
 
-  # allow ingress ssh from office
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 400
-    action     = "allow"
-    cidr_block = var.office_cidr_range
-    from_port  = 22
-    to_port    = 22
-  }
-
   # allow egress ephemeral ports
   egress {
     protocol   = "tcp"
@@ -171,6 +179,30 @@ resource "aws_network_acl" "vpc_security_acl" {
     Environment    = var.environment
     TerraformStack = var.resource_prefix
   }
+}
+
+resource "aws_network_acl_rule" "office_network_acl_db_port_rule" {
+  count          = local.allow_connection_to_office ? 1 : 0
+  from_port      = var.database_port
+  protocol       = "tcp"
+  to_port        = var.database_port
+  egress         = false
+  network_acl_id = aws_network_acl.vpc_security_acl.id
+  rule_action    = "allow"
+  rule_number    = 98
+  cidr_block     = var.office_cidr_range
+}
+
+resource "aws_network_acl_rule" "office_network_acl_ssh_rule" {
+  count          = local.allow_connection_to_office ? 1 : 0
+  from_port      = 22
+  protocol       = "tcp"
+  to_port        = 22
+  egress         = false
+  network_acl_id = aws_network_acl.vpc_security_acl.id
+  rule_action    = "allow"
+  rule_number    = 99
+  cidr_block     = var.office_cidr_range
 }
 
 # Create the Route Table

@@ -87,7 +87,7 @@ resource "aws_db_instance" "postgresql" {
   db_subnet_group_name        = module.postgres_network.subnet_group
   parameter_group_name        = var.parameter_group
   storage_encrypted           = true
-  kms_key_id                  = module.postgres_credetials.kms_alias_arn
+  kms_key_id                  = module.postgres_credetials.kms_arn
   monitoring_interval         = var.monitoring_interval
   monitoring_role_arn         = var.monitoring_interval > 0 ? aws_iam_role.enhanced_monitoring_role.arn : ""
   deletion_protection         = var.deletion_protection

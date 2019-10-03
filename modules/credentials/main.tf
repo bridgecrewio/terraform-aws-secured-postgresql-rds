@@ -24,11 +24,6 @@ resource "aws_kms_key" "postgres_kms" {
   }
 }
 
-resource "aws_kms_alias" "postgres_kms_alias" {
-  name          = "alias/${var.resource_prefix}-key"
-  target_key_id = aws_kms_key.postgres_kms.id
-}
-
 #
 # Persist credentials to SSM for reference
 #
@@ -42,7 +37,7 @@ resource "aws_ssm_parameter" "postgresql_username_ssm" {
   type        = "SecureString"
   value       = var.database_username
   description = "Database username of ${var.resource_prefix} postgres"
-  key_id      = aws_kms_alias.postgres_kms_alias.id
+  key_id      = aws_kms_key.postgres_kms.arn
   tags = {
     Environment    = var.environment
     TerraformStack = var.resource_prefix
@@ -54,7 +49,7 @@ resource "aws_ssm_parameter" "postgresql_password_ssm" {
   type        = "SecureString"
   value       = random_string.postgress_password.result
   description = "Database password of ${var.resource_prefix} postgres"
-  key_id      = aws_kms_alias.postgres_kms_alias.id
+  key_id      = aws_kms_key.postgres_kms.arn
   tags = {
     Environment    = var.environment
     TerraformStack = var.resource_prefix
