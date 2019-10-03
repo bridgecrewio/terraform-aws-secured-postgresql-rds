@@ -17,6 +17,7 @@ This module is designed to be highly configurable. The possible inputs and their
 | Name | Required? | Type | Default Value | Example Value | Description |
 |---|---|---|---|---|---|
 | database_name| YES | String | | user_actions | The name of the DB instance to be created |
+| office_cidr | NO | String | 0.0.0.0/32 | 31.168.227.138/32 | The CIDR of the offices. if left for default value, no rules will be created |
 | environment | NO | String | dev | prod | The environment this DB will be part of |
 | allocated_storage | NO | Integer | 100 | 250 | The allocated storage size of the DB, in GiB |
 | engine_version | NO | String | 9.6 | 10.5 | The version the DB will run on |
@@ -41,12 +42,19 @@ This module is designed to be highly configurable. The possible inputs and their
 |------|----------------|-------------|
 | db_instance_id | dev-secured-rds | DB Identifier | 
 | db_vpc_id | vpc-07e819de8f3af8215 | VPC identifier  |
-| private_subnet_id | subnet-0a4ec7223e81e0b09
- | Private subnet identifier |
+| private_subnet_id | subnet-0a4ec7223e81e0b09 |
+| public_subnet_id | subnet-0a4ec7223e81e0b09 |
+| database_security_group_id | sg-0c5747d714287d562 | The DB's Security Group ID |
+| vpc_network_acl_id | acl-0312f37b1ad3cfca6 | The VPC's Network ACL ID |
 | db_username_ssm_parameter | /dev/database/postgresql/secured-rds/username | Path to SecuredString containing PostgresSQL username |
 | db_password_ssm_parameter | /dev/database/postgresql/secured-rds/password | Path to SecuredString containing PostgresSQL generated password |
+| kms_arn | arn:aws:kms:eu-central-1:090772183824:key/6935c5b9-ff3f-4363-82b4-a709fbeb8a62 | The ARN of the KMS for the SSM parameters and the RDS SSE. |
 
-## Examples (TODO):
-* [How to connect from your office CIDR](docs/howTo/connecting-from-cidr.md)
+## Examples:
+* How to connect from your office CIDR
+To allow connections from your office CIDR, you can do one of the following:
+1. Supply the CIDR range of your office as the variable `office_cidr`. This will create an ingress rule in the NACL and
+the Security Group for the database port and port 22 (although this port is not open on the RDS).
+2. Use the outputs `vpc_network_acl_id` and `database_security_group_id` to add rules to those resources
 * [How to connect from another VPC](docs/howTo/connecting-from-external-vpc.md)
 
