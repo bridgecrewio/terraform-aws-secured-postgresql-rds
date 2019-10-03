@@ -1,4 +1,5 @@
 # Terraform AWS Secured PostgreSQL RDS
+[![Maintained by Bridgecrew.io](https://img.shields.io/badge/maintained%20by-bridgecrew.io-bluevioletg)](https://bridgecrew.io)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/bridgecrewio/terraform-aws-secured-postgresql-rds.svg?label=latest)](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/releases/latest)
 ![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
 [![CircleCI](https://circleci.com/gh/bridgecrewio/terraform-aws-secured-postgresql-rds.svg?style=svg)](https://circleci.com/gh/bridgecrewio/terraform-aws-secured-postgresql-rds)
