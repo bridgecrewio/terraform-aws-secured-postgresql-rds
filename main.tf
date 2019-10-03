@@ -61,16 +61,14 @@ data "aws_db_snapshot" "postgresql_snapshot" {
 }
 
 resource "aws_db_instance" "postgresql" {
-  allocated_storage   = var.allocated_storage
-  engine              = "postgres"
-  engine_version      = var.engine_version
-  identifier          = local.resources_prefix
-  snapshot_identifier = var.snapshot_identifier
-  instance_class      = var.instance_type
-  storage_type        = var.storage_type
-  iops                = var.iops
-  // TODO: make more general
-  name                       = "testdb"
+  allocated_storage          = var.allocated_storage
+  engine                     = "postgres"
+  engine_version             = var.engine_version
+  identifier                 = local.resources_prefix
+  snapshot_identifier        = var.snapshot_identifier
+  instance_class             = var.instance_type
+  storage_type               = var.storage_type
+  iops                       = var.iops
   password                   = module.postgres_credetials.password
   username                   = module.postgres_credetials.username
   backup_retention_period    = var.backup_retention_period
