@@ -8,7 +8,7 @@
 A Terraform module to create an Amazon Web Services (AWS) PostgreSQL Relational Database Server (RDS) in a VPC, NAT and security best practices.
 
 ## Architecture:
-![alt text](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/secured-rds-architecture.png "RDS Best Practices")
+![RDS Best Practices](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/secured-rds-architecture.png?raw=true)
 
 
 The username and password to the DB will be stored in AWS System Manager's Parameter store, to be reused by all the 
