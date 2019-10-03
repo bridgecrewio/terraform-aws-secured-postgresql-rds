@@ -20,7 +20,7 @@ jobs:
             }
 
             module "secure_rds" {
-              source        = "./terraform-aws-secured-postgresql-rds"
+              source        = "bridgecrewio/secured-postgresql-rds/aws"
               instance_name = "secured-rds"
               environment   = "dev"
               office_cidr   = "31.168.227.138/32"
