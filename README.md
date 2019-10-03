@@ -53,4 +53,4 @@ This module is designed to be highly configurable. The possible inputs and their
 | kms_arn | arn:aws:kms:eu-central-1:090772183824:key/6935c5b9-ff3f-4363-82b4-a709fbeb8a62 | The ARN of the KMS for the SSM parameters and the RDS SSE. |
 
 ## Examples:
-* [How to connect from your office CIDR](docs/howTo/connecting-from-cidr.md)
+* [How to connect from your office CIDR](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/howTo/connecting-from-cidr.md)
