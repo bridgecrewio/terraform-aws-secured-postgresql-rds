@@ -18,6 +18,7 @@ module "postgres_network" {
   environment       = var.environment
   resource_prefix   = local.resources_prefix
   office_cidr_range = var.office_cidr
+  vpc_cidr_block    = var.vpc_cidr_block
 }
 
 #
@@ -80,7 +81,7 @@ resource "aws_db_instance" "postgresql" {
   copy_tags_to_snapshot      = var.copy_tags_to_snapshot
   multi_az                   = var.multi_availability_zone
   port                       = var.database_port
-  publicly_accessible        = var.office_cidr != "" ? true : false
+  publicly_accessible        = var.office_cidr != "0.0.0.0/32" ? true : false
   vpc_security_group_ids = [
     module.postgres_network.security_group_id
   ]

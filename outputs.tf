@@ -6,12 +6,8 @@ output "db_vpc_id" {
   value = module.postgres_network.vpc_id
 }
 
-output "public_subnet_id" {
-  value = module.postgres_network.public_subnet_id
-}
-
-output "private_subnet_id" {
-  value = module.postgres_network.private_subnet_id
+output "db_subnet_ids" {
+  value = module.postgres_network.db_subnet_ids
 }
 
 output "database_security_group_id" {

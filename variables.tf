@@ -94,3 +94,9 @@ variable "office_cidr" {
   description = "The public CIDR range the RDS will be open to. Should be used to be able to directly connect to the RDS from the company offices"
   default     = "0.0.0.0/32" // This value is an invalid address
 }
+
+variable "vpc_cidr_block" {
+  type        = "string"
+  description = "The CIDR range for the VPC. The subnet CIDR range will be derived from this range."
+  default     = "10.0.0.0/16"
+}

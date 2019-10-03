@@ -6,6 +6,7 @@ data "aws_region" "current_region" {}
 
 locals {
   allow_connection_to_office = var.office_cidr_range != "0.0.0.0/32"
+  ip_range_as_list           = regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/(\\d{1,2})$", var.vpc_cidr_block)
 }
 
 resource "aws_vpc" "postgres_vpc" {
@@ -20,24 +21,13 @@ resource "aws_vpc" "postgres_vpc" {
   }
 }
 
-resource "aws_subnet" "private_subnet" {
+resource "aws_subnet" "db_subnets" {
+  count             = 3
   vpc_id            = aws_vpc.postgres_vpc.id
-  cidr_block        = var.secondary_subnet_cidr_block
-  availability_zone = data.aws_availability_zones.available_availability_zones.names[1]
+  cidr_block        = format("%s.%s.%s.%s/24", local.ip_range_as_list[0], local.ip_range_as_list[1], count.index, "0")
+  availability_zone = data.aws_availability_zones.available_availability_zones.names[count.index]
   tags = {
-    Name           = "${var.resource_prefix} private subnet"
-    Environment    = var.environment
-    TerraformStack = var.resource_prefix
-  }
-}
-
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.postgres_vpc.id
-  cidr_block              = var.primary_subnet_cidr_block
-  availability_zone       = data.aws_availability_zones.available_availability_zones.names[0]
-  map_public_ip_on_launch = true
-  tags = {
-    Name           = "${var.resource_prefix} public subnet"
+    Name           = "${var.resource_prefix} subnet #${count.index + 1}"
     Environment    = var.environment
     TerraformStack = var.resource_prefix
   }
@@ -45,7 +35,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_db_subnet_group" "postgres_subnet_group" {
   name       = "${var.resource_prefix}subnet_group"
-  subnet_ids = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
+  subnet_ids = aws_subnet.db_subnets.*.id
 
   tags = {
     Name           = "${var.resource_prefix} subnet group"
@@ -121,11 +111,9 @@ resource "aws_route" "routing_table_internet_access" {
 
 # create VPC Network access control list
 resource "aws_network_acl" "vpc_security_acl" {
-  vpc_id = aws_vpc.postgres_vpc.id
-  subnet_ids = [
-    aws_subnet.public_subnet.id,
-    aws_subnet.private_subnet.id
-  ]
+  vpc_id     = aws_vpc.postgres_vpc.id
+  subnet_ids = aws_subnet.db_subnets.*.id
+
   # allow port "${var.databse_port}"
   ingress {
     protocol   = "tcp"
@@ -215,15 +203,10 @@ resource "aws_route_table" "postgres_vpc_route_table" {
   }
 }
 
-# Associate the Route Table with the Subnet
-resource "aws_route_table_association" "postgres_vpc_public_subnet_association" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.postgres_vpc_route_table.id
-}
-
-# Associate the Route Table with the Subnet
+# Associate the Route Table with the Subnets
 resource "aws_route_table_association" "postgres_vpc_private_subnet_association" {
-  subnet_id      = aws_subnet.private_subnet.id
+  count          = length(aws_subnet.db_subnets.*.id)
+  subnet_id      = aws_subnet.db_subnets[count.index].id
   route_table_id = aws_route_table.postgres_vpc_route_table.id
 }
 
@@ -232,7 +215,7 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_id              = aws_vpc.postgres_vpc.id
   vpc_endpoint_type   = "Interface"
   auto_accept         = true
-  subnet_ids          = [aws_subnet.private_subnet.id]
+  subnet_ids          = aws_subnet.db_subnets.*.id
   security_group_ids  = [aws_security_group.postgres_security_group.id]
   private_dns_enabled = true
 
