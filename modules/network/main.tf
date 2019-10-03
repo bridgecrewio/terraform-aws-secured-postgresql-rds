@@ -124,6 +124,7 @@ resource "aws_network_acl" "vpc_security_acl" {
     to_port    = var.database_port
   }
 
+  # allow HTTPS traffic
   ingress {
     protocol   = "tcp"
     rule_no    = 200
