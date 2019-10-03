@@ -1,4 +1,5 @@
 # Terraform AWS Secured PostgreSQL RDS
+[![Maintained by Bridgecrew.io](https://img.shields.io/badge/maintained%20by-bridgecrew.io-blueviolet)](https://bridgecrew.io)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/bridgecrewio/terraform-aws-secured-postgresql-rds.svg?label=latest)](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/releases/latest)
 ![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
 [![CircleCI](https://circleci.com/gh/bridgecrewio/terraform-aws-secured-postgresql-rds.svg?style=svg)](https://circleci.com/gh/bridgecrewio/terraform-aws-secured-postgresql-rds)
@@ -7,7 +8,7 @@
 A Terraform module to create an Amazon Web Services (AWS) PostgreSQL Relational Database Server (RDS) in a VPC, NAT and security best practices.
 
 ## Architecture:
-![alt text](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/secured-rds-architecture.png "RDS Best Practices")
+![RDS Best Practices](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/secured-rds-architecture.png?raw=true)
 
 
 The username and password to the DB will be stored in AWS System Manager's Parameter store, to be reused by all the 
