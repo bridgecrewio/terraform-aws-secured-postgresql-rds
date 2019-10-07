@@ -7,6 +7,17 @@
 
 A Terraform module to create an Amazon Web Services (AWS) PostgreSQL Relational Database Server (RDS) in a VPC, NAT and security best practices.
 
+## Provision Instructions
+Copy and paste into your Terraform configuration, insert the variables, and run terraform init :
+
+```
+module "secured-postgresql-rds" {
+  source  = "bridgecrewio/secured-postgresql-rds/aws"
+  version = "0.6.1"
+  instance_name = "my_db"
+}
+```
+
 ## Architecture:
 ![RDS Best Practices](https://github.com/bridgecrewio/terraform-aws-secured-postgresql-rds/blob/master/docs/secured-rds-architecture.png?raw=true)
 
@@ -19,7 +30,7 @@ This module is designed to be highly configurable. The possible inputs and their
 
 | Name | Required? | Type | Default Value | Example Value | Description |
 |---|---|---|---|---|---|
-| database_name| YES | String | | user_actions | The name of the DB instance to be created |
+| instance_name| YES | String | | user_actions | The name of the DB instance to be created |
 | office_cidr | NO | String | 0.0.0.0/32 | 31.168.227.138/32 | The CIDR of the offices. if left for default value, no rules will be created |
 | environment | NO | String | dev | prod | The environment this DB will be part of |
 | allocated_storage | NO | Integer | 100 | 250 | The allocated storage size of the DB, in GiB |
