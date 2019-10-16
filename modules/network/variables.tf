@@ -25,4 +25,6 @@ variable "office_cidr_range" {
 variable "region" {
   type        = "string"
   description = "AWS region name"
+  default = "us-west-2"
+
 }
