@@ -30,6 +30,7 @@ This module is designed to be highly configurable. The possible inputs and their
 
 | Name | Required? | Type | Default Value | Example Value | Description |
 |---|---|---|---|---|---|
+| region | NO | String | us-west-2 | user_actions | The region of the vpc endpoint connecting to the db network |
 | instance_name| YES | String | | user_actions | The name of the DB instance to be created |
 | office_cidr | NO | String | 0.0.0.0/32 | 31.168.227.138/32 | The CIDR of the offices. if left for default value, no rules will be created |
 | environment | NO | String | dev | prod | The environment this DB will be part of |

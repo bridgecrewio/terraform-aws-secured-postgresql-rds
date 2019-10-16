@@ -19,6 +19,7 @@ module "postgres_network" {
   resource_prefix   = local.resources_prefix
   office_cidr_range = var.office_cidr
   vpc_cidr_block    = var.vpc_cidr_block
+  region = "${var.region}"
 }
 
 #

@@ -21,3 +21,8 @@ variable "office_cidr_range" {
   description = "The CIDR range the database port and SSH port will be open for in these vpcs."
   type        = string
 }
+
+variable "region" {
+  type        = "string"
+  description = "AWS region name"
+}

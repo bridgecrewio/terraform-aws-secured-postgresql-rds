@@ -100,3 +100,9 @@ variable "vpc_cidr_block" {
   description = "The CIDR range for the VPC. The subnet CIDR range will be derived from this range."
   default     = "10.0.0.0/16"
 }
+
+variable "region" {
+  type        = "string"
+  description = "AWS region name"
+  default = "us-west-2"
+}

@@ -2,7 +2,6 @@ data "aws_availability_zones" "available_availability_zones" {
   state = "available"
 }
 
-data "aws_region" "current_region" {}
 
 locals {
   allow_connection_to_office = var.office_cidr_range != "0.0.0.0/32"
@@ -212,7 +211,7 @@ resource "aws_route_table_association" "postgres_vpc_private_subnet_association"
 }
 
 resource "aws_vpc_endpoint" "ssm_endpoint" {
-  service_name        = "com.amazonaws.${data.aws_region.current_region.name}.ssm"
+  service_name        = "com.amazonaws.${var.region}.ssm"
   vpc_id              = aws_vpc.postgres_vpc.id
   vpc_endpoint_type   = "Interface"
   auto_accept         = true
