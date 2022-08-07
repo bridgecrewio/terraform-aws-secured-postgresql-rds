@@ -13,7 +13,7 @@ Copy and paste into your Terraform configuration, insert the variables, and run 
 ```
 module "secured-postgresql-rds" {
   source  = "bridgecrewio/secured-postgresql-rds/aws"
-  version = "0.6.1"
+  version = "0.6.2"
   instance_name = "my_db"
 }
 ```
