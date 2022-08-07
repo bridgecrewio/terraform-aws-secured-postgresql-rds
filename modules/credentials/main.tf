@@ -1,7 +1,7 @@
 #
 # RDS Password
 #
-resource "random_string" "postgress_password" {
+resource "random_password" "postgress_password" {
   keepers = {
     # Generate a new password every time this module is run
     build = timestamp()
